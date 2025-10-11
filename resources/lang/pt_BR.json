@@ -1,0 +1,24 @@
+{
+    "Name": "Nome",
+    "Email Address": "Endereço de E-mail",
+    "Password": "Senha",
+    "Confirm Password": "Confirmar Senha",
+    "Remember me": "Lembrar-me",
+    "Forgot your password?": "Esqueceu sua senha?",
+    "Log in": "Entrar",
+    "Register": "Registrar",
+    "Log Out": "Sair",
+    "Dashboard": "Painel",
+    "You're logged in!": "Você está logado!",
+
+    "Profile": "Perfil",
+    "Update your account's profile information and email address.": "Atualize as informações do perfil da sua conta e endereço de e-mail.",
+    "Ensure your account is using a long, random password to stay secure.": "Certifique-se de que sua conta está usando uma senha longa e aleatória para se manter segura.",
+    "Update Password": "Atualizar Senha",
+    "Saved.": "Salvo.",
+    "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.": "Uma vez que sua conta for excluída, todos os seus recursos e dados serão permanentemente apagados. Antes de excluir sua conta, faça o download de quaisquer dados ou informações que deseja manter.",
+    "Delete Account": "Excluir Conta",
+    "Are you sure you want to delete your account?": "Tem certeza que deseja excluir sua conta?",
+    "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.": "Uma vez que sua conta for excluída, todos os seus recursos e dados serão permanentemente excluídos. Digite sua senha para confirmar que deseja excluir permanentemente sua conta.",
+    "Cancel": "Cancelar"
+}
