@@ -19,6 +19,16 @@ services:
       - dental_network
     depends_on:
       - mysql
+    command: >
+      sh -c "
+      apt-get update &&
+      apt-get install -y git unzip &&
+      curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+      docker-php-ext-install pdo pdo_mysql &&
+      composer install --no-dev --optimize-autoloader &&
+      chown -R application:application /app &&
+      chmod -R 775 /app/storage /app/bootstrap/cache &&
+      /startup.sh"
 
   mysql:
     image: mysql:8.0
