@@ -25,12 +25,15 @@ class CalendarController extends Controller
             $currentDay->addDay();
         }
 
+        // ADICIONAR ORDER BY para ordenar por horário
         $appointments = Appointment::whereBetween('datetime', [
             $startOfWeek->startOfDay(),
             $endOfWeek->endOfDay()
-        ])->get()->groupBy(function ($appointment) {
-            return $appointment->datetime->format('Y-m-d');
-        });
+        ])
+            ->orderBy('datetime', 'asc') // ← ADICIONAR ESTA LINHA
+            ->get()->groupBy(function ($appointment) {
+                return $appointment->datetime->format('Y-m-d');
+            });
 
         $previousWeek = $startOfWeek->copy()->subWeek();
         $nextWeek = $startOfWeek->copy()->addWeek();
