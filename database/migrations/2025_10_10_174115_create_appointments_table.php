@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('patient_name');
             $table->string('phone_number');
             $table->dateTime('datetime');
+            $table->text('notes')->nullable();
             $table->timestamps();
 
             $table->unique('datetime');

@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Nelson B Carmo',
             'email' => env('USER_EMAIL'),
-            'password' => env('USER_PASSWORD'),
+            'password' => bcrypt(env('USER_PASSWORD')),
             'is_active' => true,
         ]);
     }

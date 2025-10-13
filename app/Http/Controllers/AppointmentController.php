@@ -18,7 +18,7 @@ class AppointmentController extends Controller
             return $query->where('patient_name', 'like', "%{$search}%");
         })
             ->orderBy('datetime', 'desc')
-            ->paginate(10)
+            ->paginate(5)
             ->withQueryString();
 
         return view('appointments.index', compact('appointments', 'search'));
@@ -41,6 +41,7 @@ class AppointmentController extends Controller
             'patient_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'datetime' => 'required|date|unique:appointments,datetime',
+            'notes' => 'sometimes|nullable|string',
         ]);
 
         Appointment::create($request->all());
@@ -74,6 +75,7 @@ class AppointmentController extends Controller
             'patient_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'datetime' => 'required|date|unique:appointments,datetime,' . $appointment->id,
+            'notes' => 'sometimes|nullable|string',
         ]);
 
         $appointment->update($request->all());
