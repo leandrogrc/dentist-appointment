@@ -46,33 +46,82 @@
                             </div>
                         </div>
 
-                        <!-- Appointments -->
-                        <div class="p-2 sm:p-3 min-h-24 sm:min-h-32">
-                            @php
-                            $dayAppointments = $appointments[$day->format('Y-m-d')] ?? [];
-                            @endphp
+                        <!-- Day Sections -->
+                        <div class="divide-y">
+                            <!-- Morning Section (00:00 - 11:59) -->
+                            <div class="p-2 sm:p-3">
+                                <div class="text-xs font-semibold text-gray-500 mb-2 flex items-center">
+                                    <i class="fas fa-sun text-yellow-500 mr-1"></i>
+                                    Manhã
+                                </div>
+                                <div class="min-h-20 sm:min-h-24">
+                                    @php
+                                    $dayAppointments = $appointments[$day->format('Y-m-d')] ?? collect();
+                                    $morningAppointments = $dayAppointments->filter(function($appointment) {
+                                    return $appointment->datetime->format('H:i') < '12:00' ;
+                                        });
+                                        @endphp
 
-                            @foreach($dayAppointments as $appointment)
-                            <a href="{{ route('appointments.edit', $appointment) }}"
-                                class="block bg-green-100 border border-green-300 rounded p-2 mb-2 hover:bg-green-200 hover:border-green-400 transition-all duration-200 cursor-pointer group">
-                                <div class="font-medium text-green-800 group-hover:text-green-900 text-sm sm:text-base">
-                                    {{ $appointment->patient_name }}
-                                    <i class="fas fa-edit ml-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"></i>
-                                </div>
-                                <div class="text-xs sm:text-sm text-green-600 group-hover:text-green-700">
-                                    {{ $appointment->datetime->format('H:i') }}
-                                </div>
-                                <div class="text-xs text-green-500 mt-1 group-hover:text-green-600">
-                                    {{ $appointment->phone_number }}
-                                </div>
-                            </a>
-                            @endforeach
+                                        @foreach($morningAppointments as $appointment)
+                                        <a href="{{ route('appointments.edit', $appointment) }}"
+                                        class="block bg-green-100 border border-green-300 rounded p-2 mb-2 hover:bg-green-200 hover:border-green-400 transition-all duration-200 cursor-pointer group">
+                                        <div class="font-medium text-green-800 group-hover:text-green-900 text-sm sm:text-base">
+                                            {{ $appointment->patient_name }}
+                                            <i class="fas fa-edit ml-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"></i>
+                                        </div>
+                                        <div class="text-xs sm:text-sm text-green-600 group-hover:text-green-700">
+                                            {{ $appointment->datetime->format('H:i') }}
+                                        </div>
+                                        <div class="text-xs text-green-500 mt-1 group-hover:text-green-600">
+                                            {{ $appointment->phone_number }}
+                                        </div>
+                                        </a>
+                                        @endforeach
 
-                            @if(empty($dayAppointments))
-                            <div class="text-center text-gray-400 text-xs sm:text-sm py-4">
-                                Sem consultas
+                                        @if($morningAppointments->isEmpty())
+                                        <div class="text-center text-gray-400 text-xs py-3">
+                                            Nenhuma consulta
+                                        </div>
+                                        @endif
+                                </div>
                             </div>
-                            @endif
+
+                            <!-- Afternoon Section (12:00 - 23:59) -->
+                            <div class="p-2 sm:p-3">
+                                <div class="text-xs font-semibold text-gray-500 mb-2 flex items-center">
+                                    <i class="fas fa-sun text-blue-500 mr-1"></i>
+                                    Tarde
+                                </div>
+                                <div class="min-h-20 sm:min-h-24">
+                                    @php
+                                    $afternoonAppointments = $dayAppointments->filter(function($appointment) {
+                                    return $appointment->datetime->format('H:i') >= '12:00';
+                                    });
+                                    @endphp
+
+                                    @foreach($afternoonAppointments as $appointment)
+                                    <a href="{{ route('appointments.edit', $appointment) }}"
+                                        class="block bg-green-100 border border-green-300 rounded p-2 mb-2 hover:bg-green-200 hover:border-green-400 transition-all duration-200 cursor-pointer group">
+                                        <div class="font-medium text-green-800 group-hover:text-green-900 text-sm sm:text-base">
+                                            {{ $appointment->patient_name }}
+                                            <i class="fas fa-edit ml-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"></i>
+                                        </div>
+                                        <div class="text-xs sm:text-sm text-green-600 group-hover:text-green-700">
+                                            {{ $appointment->datetime->format('H:i') }}
+                                        </div>
+                                        <div class="text-xs text-green-500 mt-1 group-hover:text-green-600">
+                                            {{ $appointment->phone_number }}
+                                        </div>
+                                    </a>
+                                    @endforeach
+
+                                    @if($afternoonAppointments->isEmpty())
+                                    <div class="text-center text-gray-400 text-xs py-3">
+                                        Nenhuma consulta
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @endforeach
@@ -90,8 +139,8 @@
 
 <style>
     /* Garantir que os links sejam clicáveis em todo o card */
-    .min-h-24 a,
-    .min-h-32 a {
+    .min-h-20 a,
+    .min-h-24 a {
         display: block;
         text-decoration: none;
     }
