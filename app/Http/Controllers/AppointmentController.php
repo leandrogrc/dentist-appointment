@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
 {
@@ -42,6 +43,8 @@ class AppointmentController extends Controller
             'phone_number' => 'required|string|max:20',
             'datetime' => 'required|date|unique:appointments,datetime',
             'notes' => 'sometimes|nullable|string',
+        ], [
+            'datetime.unique' => 'Já existe uma consulta agendada para este horário.',
         ]);
 
         Appointment::create($request->all());
@@ -73,14 +76,23 @@ class AppointmentController extends Controller
     {
         $request->validate([
             'patient_name' => 'required|string|max:255',
+            'dentist_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
-            'datetime' => 'required|date|unique:appointments,datetime,' . $appointment->id,
+            'missed' => 'sometimes|boolean',
+            'datetime' => [
+                'required',
+                'date',
+                Rule::unique('appointments')->where(function ($query) use ($request, $appointment) {
+                    return $query->where('datetime', $request->datetime)
+                        ->where('dentist_name', $request->dentist_responsible);
+                })->ignore($appointment->id)
+            ],
             'notes' => 'sometimes|nullable|string',
         ]);
 
         $appointment->update($request->all());
 
-        return redirect()->route('appointments.index')
+        return redirect()->route('calendar.weekly')
             ->with('success', 'Consulta atualizada com sucesso!');
     }
 

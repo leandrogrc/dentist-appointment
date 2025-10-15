@@ -48,7 +48,7 @@
                         </div>
 
                         <!-- Date and Time -->
-                        <div class="md:col-span-2">
+                        <div>
                             <label for="datetime" class="block text-sm font-medium text-gray-700">
                                 Data e Hora *
                             </label>
@@ -59,6 +59,28 @@
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                                 required>
                             @error('datetime')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Dentist Responsible -->
+                        <div>
+                            <label for="dentist_name" class="block text-sm font-medium text-gray-700">
+                                Dentista Responsável *
+                            </label>
+                            <select name="dentist_name"
+                                id="dentist_name"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                required>
+                                <option value="">Selecione um dentista</option>
+                                <option value="Dr. Nelson" {{ old('dentist_name') == 'Dr. Nelson' ? 'selected' : '' }}>
+                                    Dr. Nelson
+                                </option>
+                                <option value="Dra. Alessandra" {{ old('dentist_name') == 'Dra. Alessandra' ? 'selected' : '' }}>
+                                    Dra. Alessandra
+                                </option>
+                            </select>
+                            @error('dentist_name')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>

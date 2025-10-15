@@ -29,6 +29,12 @@
                             <span class="font-medium text-gray-700">Horário:</span>
                             <span class="text-gray-900">{{ $appointment->datetime->format('H:i') }}</span>
                         </div>
+                        @if($appointment->dentist_name)
+                        <div>
+                            <span class="font-medium text-gray-700">Dentista:</span>
+                            <span class="text-gray-900">{{ $appointment->dentist_name }}</span>
+                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -72,7 +78,7 @@
                         </div>
 
                         <!-- Date and Time -->
-                        <div class="md:col-span-2">
+                        <div>
                             <label for="datetime" class="block text-sm font-medium text-gray-700">
                                 Data e Hora *
                             </label>
@@ -83,6 +89,28 @@
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                                 required>
                             @error('datetime')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Dentist Responsible -->
+                        <div>
+                            <label for="dentist_name" class="block text-sm font-medium text-gray-700">
+                                Dentista Responsável *
+                            </label>
+                            <select name="dentist_name"
+                                id="dentist_name"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                required>
+                                <option value="">Selecione um dentista</option>
+                                <option value="Dr. Nelson" {{ old('dentist_name', $appointment->dentist_name) == 'Dr. Nelson' ? 'selected' : '' }}>
+                                    Dr. Nelson
+                                </option>
+                                <option value="Dra. Alessandra" {{ old('dentist_name', $appointment->dentist_name) == 'Dra. Alessandra' ? 'selected' : '' }}>
+                                    Dra. Alessandra
+                                </option>
+                            </select>
+                            @error('dentist_name')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -100,7 +128,25 @@
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <div>
+                            <label for="missed" class="block text-sm font-medium text-gray-700 mb-2">
+                                Status da Consulta
+                            </label>
+                            <label for="missed" class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="missed" value="0">
+                                <input type="checkbox"
+                                    name="missed"
+                                    id="missed"
+                                    value="1"
+                                    class="sr-only peer"
+                                    {{ old('missed', $appointment->missed) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
+                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Marcar como ausente</span>
+                            </label>
+                        </div>
                     </div>
+
 
                     <!-- Buttons -->
                     <div class="flex justify-between items-center mt-8">
@@ -152,6 +198,9 @@
                 </p>
                 <p class="text-sm text-gray-500 mt-2">
                     Data: <strong>{{ $appointment->datetime->format('d/m/Y H:i') }}</strong>
+                </p>
+                <p class="text-sm text-gray-500 mt-2">
+                    Dentista: <strong>{{ $appointment->dentist_responsible ?? 'Não definido' }}</strong>
                 </p>
                 <p class="text-sm text-red-500 mt-3 font-medium">
                     Esta ação não pode ser desfeita!
