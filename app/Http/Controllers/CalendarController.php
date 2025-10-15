@@ -13,6 +13,9 @@ class CalendarController extends Controller
     {
         $date = $request->get('date') ? Carbon::parse($request->get('date')) : Carbon::now();
 
+        // Configurar locale para português
+        Carbon::setLocale('pt_BR');
+
         // Start of week (Monday)
         $startOfWeek = $date->copy()->startOfWeek();
         $endOfWeek = $date->copy()->endOfWeek();
@@ -30,7 +33,7 @@ class CalendarController extends Controller
             $startOfWeek->startOfDay(),
             $endOfWeek->endOfDay()
         ])
-            ->orderBy('datetime', 'asc') // ← ADICIONAR ESTA LINHA
+            ->orderBy('datetime', 'asc')
             ->get()->groupBy(function ($appointment) {
                 return $appointment->datetime->format('Y-m-d');
             });
