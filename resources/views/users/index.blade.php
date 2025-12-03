@@ -7,15 +7,77 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 md:gap-0">
                     <h2 class="text-2xl font-bold text-gray-800">Gerenciar Usuários do Sistema</h2>
                     <a href="{{ route('users.create') }}"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                        class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center">
                         <i class="fas fa-user-plus mr-2"></i> Novo Usuário
                     </a>
                 </div>
 
-                <div class="overflow-x-auto">
+                <!-- Mobile Cards -->
+                <div class="md:hidden space-y-4">
+                    @foreach($users as $user)
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-bold text-gray-900">{{ $user->name }}</h3>
+                                <p class="text-sm text-gray-500">{{ $user->email }}</p>
+                            </div>
+                            <div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $user->is_active ? 'Ativo' : 'Inativo' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="text-sm text-gray-600 mb-4">
+                            @if($user->isSuperAdmin())
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2">
+                                Admin
+                            </span>
+                            @endif
+                            <div class="flex justify-between mt-2">
+                                <span>Criado em:</span>
+                                <span>{{ $user->created_at->format('d/m/Y') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2 pt-3 border-t border-gray-100">
+                            @if(!$user->isSuperAdmin() || auth()->user()->isSuperAdmin())
+                            <div class="flex gap-2">
+                                <a href="{{ route('users.edit', $user) }}"
+                                    class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm flex items-center justify-center">
+                                    <i class="fas fa-edit mr-1"></i> Editar
+                                </a>
+                                <button onclick="openResetModal({{ $user->id }}, '{{ $user->name }}')"
+                                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm flex items-center justify-center">
+                                    <i class="fas fa-key mr-1"></i> Senha
+                                </button>
+                            </div>
+
+                            @if(!$user->isSuperAdmin())
+                            <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                onsubmit="return confirm('Tem certeza que deseja excluir o usuário {{ $user->name }}?')"
+                                class="w-full">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm flex items-center justify-center">
+                                    <i class="fas fa-trash mr-1"></i> Excluir
+                                </button>
+                            </form>
+                            @endif
+                            @else
+                            <span class="text-gray-400 text-sm text-center py-2">Ações limitadas</span>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <!-- Desktop Table -->
+                <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full bg-white">
                         <thead>
                             <tr class="bg-gray-100">

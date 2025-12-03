@@ -7,17 +7,17 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 md:gap-0">
                     <h2 class="text-2xl font-bold text-gray-800">Todas as Consultas</h2>
                     <a href="{{ route('appointments.create') }}"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                        class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center">
                         <i class="fas fa-plus mr-2"></i> Nova Consulta
                     </a>
                 </div>
 
                 <!-- Filtro de Busca -->
                 <div class="mb-6">
-                    <form method="GET" action="{{ route('appointments.index') }}" class="flex gap-4">
+                    <form method="GET" action="{{ route('appointments.index') }}" class="flex flex-col md:flex-row gap-4">
                         <div class="flex-1">
                             <input type="text"
                                 name="search"
@@ -26,16 +26,18 @@
                                 placeholder="Buscar por nome do paciente..."
                                 class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
-                        <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
-                            <i class="fas fa-search mr-2"></i> Buscar
-                        </button>
-                        @if(request('search'))
-                        <a href="{{ route('appointments.index') }}"
-                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md flex items-center">
-                            <i class="fas fa-times mr-2"></i> Limpar
-                        </a>
-                        @endif
+                        <div class="flex gap-2">
+                            <button type="submit"
+                                class="flex-1 md:flex-none bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center justify-center">
+                                <i class="fas fa-search mr-2"></i> Buscar
+                            </button>
+                            @if(request('search'))
+                            <a href="{{ route('appointments.index') }}"
+                                class="flex-1 md:flex-none bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md flex items-center justify-center">
+                                <i class="fas fa-times mr-2"></i> Limpar
+                            </a>
+                            @endif
+                        </div>
                     </form>
                 </div>
 
@@ -54,7 +56,38 @@
                 </div>
                 @endif
 
-                <div class="overflow-x-auto">
+                <!-- Mobile Cards -->
+                <div class="md:hidden space-y-4 mb-6">
+                    @foreach($appointments as $appointment)
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-bold text-gray-900">{{ $appointment->patient_name }}</h3>
+                                <p class="text-sm text-gray-500">{{ $appointment->phone_number }}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-medium text-gray-900">{{ $appointment->datetime->format('d/m/y') }}</div>
+                                <div class="text-sm text-gray-500">{{ $appointment->datetime->format('H:i') }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2 mt-4 pt-3 border-t border-gray-100">
+                            <a href="{{ route('appointments.edit', $appointment) }}"
+                                class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm flex items-center justify-center">
+                                <i class="fas fa-edit mr-1"></i> Editar
+                            </a>
+                            <button type="button"
+                                onclick="openDeleteModal({{ $appointment->id }}, '{{ $appointment->patient_name }}', '{{ $appointment->datetime->format('d/m/Y H:i') }}')"
+                                class="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm flex items-center justify-center">
+                                <i class="fas fa-trash mr-1"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <!-- Desktop Table -->
+                <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full bg-white">
                         <thead>
                             <tr class="bg-gray-100">
@@ -106,7 +139,7 @@
 
                 <!-- Paginação -->
                 @if($appointments->hasPages())
-                <div class="mt-6">
+                <div class="mt-6 overflow-x-auto pb-2">
                     {{ $appointments->links() }}
                 </div>
                 @endif

@@ -74,13 +74,14 @@
                     </div>
 
                     <!-- Buttons -->
-                    <div class="flex justify-end space-x-4 mt-8">
+                    <!-- Buttons -->
+                    <div class="flex flex-col-reverse md:flex-row justify-end mt-8 gap-4 md:gap-4">
                         <a href="{{ route('users.index') }}"
-                            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
+                            class="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg text-center">
                             Cancelar
                         </a>
                         <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center">
+                            class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center justify-center">
                             <i class="fas fa-save mr-2"></i> Cadastrar Usuário
                         </button>
                     </div>

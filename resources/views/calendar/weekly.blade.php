@@ -8,24 +8,80 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <!-- Week Navigation -->
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 md:gap-0">
                     <a href="{{ route('calendar.weekly', ['date' => $previousWeek->format('Y-m-d')]) }}"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center w-full md:w-auto justify-center">
                         <i class="fas fa-chevron-left mr-2"></i> Semana Anterior
                     </a>
 
-                    <h2 class="text-2xl font-bold text-gray-800">
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 text-center">
                         {{ $startOfWeek->format('d/m/Y') }} - {{ $endOfWeek->format('d/m/Y') }}
                     </h2>
 
                     <a href="{{ route('calendar.weekly', ['date' => $nextWeek->format('Y-m-d')]) }}"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center w-full md:w-auto justify-center">
                         Próxima Semana <i class="fas fa-chevron-right ml-2"></i>
                     </a>
                 </div>
 
-                <!-- TABELA DA MANHÃ -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <!-- MOBILE/TABLET VIEW (By Day) -->
+                <div class="lg:hidden space-y-6 mb-6">
+                    @foreach($weekDays as $day)
+                    <div class="{{ $day->isToday() ? 'bg-blue-50 border-blue-300 ring-1 ring-blue-300' : 'bg-white border-gray-200' }} overflow-hidden shadow-sm rounded-lg border">
+                        <!-- Day Header -->
+                        <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
+                            <div class="font-bold text-lg text-gray-800">{{ $day->format('d/m/Y') }}</div>
+                            <div class="text-sm font-medium text-gray-500">
+                                @php
+                                $daysPt = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                                echo $daysPt[$day->dayOfWeek];
+                                @endphp
+                            </div>
+                        </div>
+
+                        <div class="p-4 space-y-4">
+                            @php
+                            $dayAppointments = $appointments[$day->format('Y-m-d')] ?? collect();
+                            $morningAppointments = $dayAppointments->filter(fn($a) => $a->datetime->format('H:i') < '12:00');
+                            $afternoonAppointments = $dayAppointments->filter(fn($a) => $a->datetime->format('H:i') >= '12:00');
+                            @endphp
+
+                            <!-- Morning -->
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-sun text-yellow-500 mr-2"></i>
+                                    <h3 class="font-semibold text-gray-700">Manhã</h3>
+                                </div>
+                                <div class="space-y-2">
+                                    @forelse($morningAppointments as $appointment)
+                                        @include('calendar.partials.appointment-card', ['appointment' => $appointment])
+                                    @empty
+                                        <div class="text-gray-400 text-sm italic">Nenhuma consulta</div>
+                                    @endforelse
+                                </div>
+                            </div>
+
+                            <!-- Afternoon -->
+                            <div>
+                                <div class="flex items-center mb-2 mt-4">
+                                    <i class="fas fa-moon text-indigo-500 mr-2"></i>
+                                    <h3 class="font-semibold text-gray-700">Tarde</h3>
+                                </div>
+                                <div class="space-y-2">
+                                    @forelse($afternoonAppointments as $appointment)
+                                        @include('calendar.partials.appointment-card', ['appointment' => $appointment])
+                                    @empty
+                                        <div class="text-gray-400 text-sm italic">Nenhuma consulta</div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <!-- TABELA DA MANHÃ (Desktop) -->
+                <div class="hidden lg:block bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-4 sm:p-6 bg-white border-b border-gray-200">
                         <div class="flex items-center justify-center mb-6">
                             <i class="fas fa-sun text-yellow-500 text-xl mr-3"></i>
@@ -58,48 +114,7 @@
                                             @endphp
 
                                             @forelse($morningAppointments as $appointment)
-                                            @if($appointment->missed)
-                                            <a href="{{ route('appointments.edit', $appointment) }}"
-                                                class="block bg-red-50 border border-red-200 hover:bg-red-100 hover:border-red-300 rounded-lg p-2 transition-all duration-200 cursor-pointer group relative shadow-sm">
-                                                <div class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow">
-                                                    <i class="fas fa-times mr-1"></i>Faltou
-                                                </div>
-                                                <div class="font-medium text-red-800 group-hover:text-red-900 text-sm sm:text-base line-through">
-                                                    {{ $appointment->patient_name }}
-                                                    <i class="fas fa-edit ml-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                                                </div>
-                                                <div class="text-xs sm:text-sm text-red-600 group-hover:text-red-700">
-                                                    {{ $appointment->datetime->format('H:i') }}
-                                                </div>
-                                                <div class="text-xs text-red-500 group-hover:text-red-600 mt-1">
-                                                    {{ $appointment->phone_number }}
-                                                </div>
-                                                @if($appointment->dentist_name)
-                                                <div class="text-xs text-red-700 group-hover:text-red-800 mt-1 font-medium">
-                                                    {{ $appointment->dentist_name }}
-                                                </div>
-                                                @endif
-                                            </a>
-                                            @else
-                                            <a href="{{ route('appointments.edit', $appointment) }}"
-                                                class="block {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300' : 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' }} border rounded-lg p-2 transition-all duration-200 cursor-pointer group shadow-sm">
-                                                <div class="font-medium {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-800 group-hover:text-orange-900' : 'text-green-800 group-hover:text-green-900' }} text-sm sm:text-base">
-                                                    {{ $appointment->patient_name }}
-                                                    <i class="fas fa-edit ml-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                                                </div>
-                                                <div class="text-xs sm:text-sm {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-600 group-hover:text-orange-700' : 'text-green-600 group-hover:text-green-700' }}">
-                                                    {{ $appointment->datetime->format('H:i') }}
-                                                </div>
-                                                <div class="text-xs {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-500 group-hover:text-orange-600' : 'text-green-500 group-hover:text-green-600' }} mt-1">
-                                                    {{ $appointment->phone_number }}
-                                                </div>
-                                                @if($appointment->dentist_name)
-                                                <div class="text-xs {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-700 group-hover:text-orange-800' : 'text-green-700 group-hover:text-green-800' }} mt-1 font-medium">
-                                                    {{ $appointment->dentist_name }}
-                                                </div>
-                                                @endif
-                                            </a>
-                                            @endif
+                                                @include('calendar.partials.appointment-card', ['appointment' => $appointment])
                                             @empty
                                             <div class="text-center text-gray-400 text-xs py-4 bg-gray-50 rounded-lg border border-gray-100">
                                                 <i class="fas fa-coffee text-gray-300 mb-1 block text-lg"></i>
@@ -114,8 +129,8 @@
                     </div>
                 </div>
 
-                <!-- TABELA DA TARDE -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <!-- TABELA DA TARDE (Desktop) -->
+                <div class="hidden lg:block bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-4 sm:p-6 bg-white border-b border-gray-200">
                         <div class="flex items-center justify-center mb-6">
                             <i class="fas fa-moon text-indigo-500 text-xl mr-3"></i>
@@ -148,48 +163,7 @@
                                         @endphp
 
                                         @forelse($afternoonAppointments as $appointment)
-                                        @if($appointment->missed)
-                                        <a href="{{ route('appointments.edit', $appointment) }}"
-                                            class="block bg-red-50 border border-red-200 hover:bg-red-100 hover:border-red-300 rounded-lg p-2 transition-all duration-200 cursor-pointer group relative shadow-sm">
-                                            <div class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow">
-                                                <i class="fas fa-times mr-1"></i>Faltou
-                                            </div>
-                                            <div class="font-medium text-red-800 group-hover:text-red-900 text-sm sm:text-base line-through">
-                                                {{ $appointment->patient_name }}
-                                                <i class="fas fa-edit ml-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                                            </div>
-                                            <div class="text-xs sm:text-sm text-red-600 group-hover:text-red-700">
-                                                {{ $appointment->datetime->format('H:i') }}
-                                            </div>
-                                            <div class="text-xs text-red-500 group-hover:text-red-600 mt-1">
-                                                {{ $appointment->phone_number }}
-                                            </div>
-                                            @if($appointment->dentist_name)
-                                            <div class="text-xs text-red-700 group-hover:text-red-800 mt-1 font-medium">
-                                                {{ $appointment->dentist_name }}
-                                            </div>
-                                            @endif
-                                        </a>
-                                        @else
-                                        <a href="{{ route('appointments.edit', $appointment) }}"
-                                            class="block {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300' : 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' }} border rounded-lg p-2 transition-all duration-200 cursor-pointer group shadow-sm">
-                                            <div class="font-medium {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-800 group-hover:text-orange-900' : 'text-green-800 group-hover:text-green-900' }} text-sm sm:text-base">
-                                                {{ $appointment->patient_name }}
-                                                <i class="fas fa-edit ml-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                                            </div>
-                                            <div class="text-xs sm:text-sm {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-600 group-hover:text-orange-700' : 'text-green-600 group-hover:text-green-700' }}">
-                                                {{ $appointment->datetime->format('H:i') }}
-                                            </div>
-                                            <div class="text-xs {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-500 group-hover:text-orange-600' : 'text-green-500 group-hover:text-green-600' }} mt-1">
-                                                {{ $appointment->phone_number }}
-                                            </div>
-                                            @if($appointment->dentist_name)
-                                            <div class="text-xs {{ $appointment->dentist_name == 'Dra. Alessandra' ? 'text-orange-700 group-hover:text-orange-800' : 'text-green-700 group-hover:text-green-800' }} mt-1 font-medium">
-                                                {{ $appointment->dentist_name }}
-                                            </div>
-                                            @endif
-                                        </a>
-                                        @endif
+                                            @include('calendar.partials.appointment-card', ['appointment' => $appointment])
                                         @empty
                                         <div class="text-center text-gray-400 text-xs py-4 bg-gray-50 rounded-lg border border-gray-100">
                                             <i class="fas fa-coffee text-gray-300 mb-1 block text-lg"></i>

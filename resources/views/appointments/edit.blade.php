@@ -123,7 +123,9 @@
                             <textarea name="notes"
                                 id="notes"
                                 rows="3"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">{{ old('notes', $appointment->notes) }}</textarea>
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">{{ old('notes', $appointment->notes) }}
+                            </textarea>
+                            <span class="text-xs text-gray-500">As observações ficarão ao lado do nome do paciente no calendário.</span>
                             @error('notes')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -147,24 +149,23 @@
                         </div>
                     </div>
 
-
                     <!-- Buttons -->
-                    <div class="flex justify-between items-center mt-8">
+                    <div class="flex flex-col-reverse md:flex-row justify-between items-center mt-8 gap-4 md:gap-0">
                         <!-- Botão de Excluir -->
                         <button type="button"
                             onclick="openDeleteModal()"
-                            class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                            class="w-full md:w-auto bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg flex items-center justify-center transition duration-200">
                             <i class="fas fa-trash mr-2"></i> Cancelar Consulta
                         </button>
 
                         <!-- Botões de Ação -->
-                        <div class="flex space-x-4">
+                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
                             <a href="{{ route('appointments.index') }}"
-                                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200">
+                                class="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg text-center transition duration-200">
                                 Voltar
                             </a>
                             <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                                class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center justify-center transition duration-200">
                                 <i class="fas fa-save mr-2"></i> Atualizar Consulta
                             </button>
                         </div>
